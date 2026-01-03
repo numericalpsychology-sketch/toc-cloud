@@ -157,10 +157,10 @@ ${(lines ?? []).map((l) => `${l.key}: ${l.text}`).join("\n")}
       comments: { "1": [], "2": [], "3": [], "4": [] } as Record<LineKey, AiComment[]>,
     };
 
-    // resp を any として扱う（型エラー回避）
+    // 型エラー回避：resp を any 扱い
     const respAny = resp as any;
 
-    // 1) まず raw を作る（parsed優先、ダメなら output_text を JSON parse）
+    // parsed があればそれを使い、なければ output_text を JSON parse（失敗したら空）
     const raw =
       respAny.output_parsed ??
       (() => {
@@ -171,13 +171,13 @@ ${(lines ?? []).map((l) => `${l.key}: ${l.text}`).join("\n")}
         }
       })();
 
-    // 2) out を必ず期待する形に正規化する（comments を必ず配列に）
+    // out を期待形に正規化
     const out: { comments: any[] } = {
       comments: Array.isArray(raw?.comments) ? raw.comments : [],
     };
 
-    // 3) ここから先は今まで通り
     out.comments = postFilter(out.comments, lines);
+
 
 
     return new Response(JSON.stringify(out), {
