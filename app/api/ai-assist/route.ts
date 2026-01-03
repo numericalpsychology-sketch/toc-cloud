@@ -171,12 +171,20 @@ ${(lines ?? []).map((l) => `${l.key}: ${l.text}`).join("\n")}
         }
       })();
 
-    // out を期待形に正規化
-    const out: { comments: any[] } = {
-      comments: Array.isArray(raw?.comments) ? raw.comments : [],
+    // out を期待形に正規化（comments は配列でも辞書でもOKにする）
+    const out: { comments: any[] | Record<string, any[]> } = {
+      comments:
+        Array.isArray(raw?.comments)
+          ? raw.comments
+          : (raw?.comments && typeof raw.comments === "object")
+            ? raw.comments
+            : [],
     };
 
-    out.comments = postFilter(out.comments, lines);
+    // postFilter は配列/辞書どちらでも返す想定
+    out.comments = postFilter(out.comments, lines.map(l => l.text));
+
+
 
 
 

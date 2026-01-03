@@ -191,7 +191,10 @@ export function ReadAloudPanel(props: {
   function isNegPair(x: string, y: string): boolean {
     const X = normalize(x);
     const Y = normalize(y);
-    return stem(X) && stem(X) === stem(Y) && hasNeg(X) !== hasNeg(Y);
+    const sX = stem(X);
+    const sY = stem(Y);
+    return !!sX && sX === sY && hasNeg(X) !== hasNeg(Y);
+
   }
 
   // (6)(7)(8)(9) “本当にそう？” の出し方：うるさくしないため条件付き
