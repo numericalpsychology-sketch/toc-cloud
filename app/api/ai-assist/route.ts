@@ -157,15 +157,21 @@ ${(lines ?? []).map((l) => `${l.key}: ${l.text}`).join("\n")}
       comments: { "1": [], "2": [], "3": [], "4": [] } as Record<LineKey, AiComment[]>,
     };
 
+    // resp を any として扱う（型エラー回避）
+    const respAny = resp as any;
+
     const out =
-      (resp.output_parsed as any) ??
+      respAny.output_parsed ??
       (() => {
         try {
-          return JSON.parse(resp.output_text ?? "");
+          // output_text が JSON文字列ならそれをパース
+          return JSON.parse(respAny.output_text ?? "{}");
         } catch {
-          return fallback;
+          // JSONじゃなければテキストとして返す（最低限）
+          return { text: respAny.output_text ?? "" };
         }
       })();
+
 
     out.comments = postFilter(out.comments, lines);
 
