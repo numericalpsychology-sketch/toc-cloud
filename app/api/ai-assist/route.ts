@@ -160,20 +160,25 @@ ${(lines ?? []).map((l) => `${l.key}: ${l.text}`).join("\n")}
     // resp を any として扱う（型エラー回避）
     const respAny = resp as any;
 
-    const out =
+    // 1) まず raw を作る（parsed優先、ダメなら output_text を JSON parse）
+    const raw =
       respAny.output_parsed ??
       (() => {
         try {
-          // output_text が JSON文字列ならそれをパース
           return JSON.parse(respAny.output_text ?? "{}");
         } catch {
-          // JSONじゃなければテキストとして返す（最低限）
-          return { text: respAny.output_text ?? "" };
+          return {};
         }
       })();
 
+    // 2) out を必ず期待する形に正規化する（comments を必ず配列に）
+    const out: { comments: any[] } = {
+      comments: Array.isArray(raw?.comments) ? raw.comments : [],
+    };
 
+    // 3) ここから先は今まで通り
     out.comments = postFilter(out.comments, lines);
+
 
     return new Response(JSON.stringify(out), {
       headers: { "Content-Type": "application/json" },
