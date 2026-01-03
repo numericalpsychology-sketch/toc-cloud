@@ -19,6 +19,7 @@ type Tag =
   | "family"
   | "parenting"
   | "private"
+  | "kids"
   | "materials";
 
 const TAGS: { key: Tag; label: string }[] = [
@@ -28,6 +29,7 @@ const TAGS: { key: Tag; label: string }[] = [
   { key: "family", label: "家庭" },
   { key: "parenting", label: "子育て" },
   { key: "private", label: "プライベート" },
+  { key: "kids", label: "子ども" },
   { key: "materials", label: "教材" },
 ];
 
