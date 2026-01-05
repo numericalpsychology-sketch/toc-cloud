@@ -165,6 +165,41 @@ export default function HomeClient() {
         )}
       </div>
 
+      <div
+        style={{
+          padding: "10px 12px",
+          fontSize: 13,
+          color: "#444",
+          background: "#fafafa",
+          borderBottom: "1px solid #eee",
+        }}
+      >
+        TOC（制約理論）の対立解消ツール「クラウド」を、
+        みんなで共有・改善するためのSNSです。
+      </div>
+
+      <div
+        style={{
+          padding: "10px 12px",
+          fontSize: 13,
+          background: "white",
+          borderBottom: "1px solid #eee",
+        }}
+      >
+        <a
+          href="https://www.youtube.com/watch?v=RXauNpb8UJA"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            color: "#0b5cff",
+            fontWeight: 700,
+            textDecoration: "none",
+          }}
+        >
+          ▶ はじめての方へ：TOCクラウドの考え方を解説（動画）
+        </a>
+      </div>
+
       <div style={{ padding: 12 }}>
         {/* ログイン案内（閲覧はOK） */}
         {!authLoading && !user && (
