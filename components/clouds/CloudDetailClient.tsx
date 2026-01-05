@@ -1,6 +1,6 @@
 "use client";
 
-
+import Link from "next/link"; // ← ★これを追加
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../../lib/firebase/firestore";
 import { CloudActions } from "../../components/clouds/CloudActions";
@@ -10,6 +10,8 @@ import { CloudDiagramLR } from "@/components/clouds/CloudDiagramLR";
 import { CloudDiagramSolutions } from "@/components/clouds/CloudDiagramSolutions";
 import { useEffect, useMemo, useState } from "react";
 import { SolutionsRepo, type SolutionRow } from "@/lib/repositories/solutions.repo";
+import { useAuth } from "@/hooks/useAuth";
+
 
 
 type CloudDoc = any;
@@ -17,6 +19,7 @@ type CloudDoc = any;
 export function CloudDetailClient({ cloudId }: { cloudId: string }) {
   const [data, setData] = useState<CloudDoc | null>(null);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
 
   useEffect(() => {
     const ref = doc(db, "clouds", cloudId);
@@ -70,6 +73,15 @@ export function CloudDetailClient({ cloudId }: { cloudId: string }) {
     <div style={{ padding: 24, display: "grid", gap: 12, maxWidth: 900 }}>
       <h1 style={{ fontSize: 20, fontWeight: 700 }}>{data.title}</h1>
 
+      {!user && (
+        <div style={{ fontSize: 12, color: "#444" }}>
+          ※ ブックマーク・解決策の投稿・評価には
+          <Link href="/login" style={{ marginLeft: 4, fontWeight: 700 }}>
+            ログイン
+          </Link>
+          が必要です
+        </div>
+      )}
 
       <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
         <button
