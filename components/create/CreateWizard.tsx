@@ -44,7 +44,16 @@ type Draft = {
   context?: string;
   reason_D_blocks_C?: string;
   reason_Dprime_blocks_B?: string;
+};
 
+const labelStyle: React.CSSProperties = { fontSize: 12, color: "#444", fontWeight: 700 };
+const inputStyle: React.CSSProperties = {
+  width: "100%",
+  padding: 10,
+  border: "1px solid #ddd",
+  borderRadius: 10,
+  color: "#111",
+  background: "white",
 };
 
 export function CreateWizard() {
@@ -62,7 +71,6 @@ export function CreateWizard() {
     context: "",
     reason_D_blocks_C: "",
     reason_Dprime_blocks_B: "",
-
   });
 
   const Bn = useMemo(() => normalizeDesire(draft.B_raw), [draft.B_raw]);
@@ -89,15 +97,23 @@ export function CreateWizard() {
   }, [draft]);
 
   return (
-    <div style={{ padding: 24, display: "grid", gap: 14, maxWidth: 980 }}>
+    <div style={{ padding: 24, display: "grid", gap: 14, maxWidth: 980, background: "white", color: "#111" }}>
       <div style={{ display: "flex", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
         <div>
-          <div style={{ fontSize: 12, opacity: 0.7 }}>タイトル（自動生成）</div>
-          <div style={{ fontSize: 18, fontWeight: 800 }}>{titleResult.title}</div>
+          <div style={labelStyle}>タイトル（自動生成）</div>
+          <div style={{ fontSize: 18, fontWeight: 800, color: "#111" }}>{titleResult.title}</div>
         </div>
 
         <button
-          style={{ padding: "10px 14px", border: "1px solid #ccc", borderRadius: 10 }}
+          style={{
+            padding: "10px 14px",
+            border: "1px solid #ccc",
+            borderRadius: 10,
+            background: "white",
+            color: "#111",
+            fontWeight: 700,
+            cursor: "pointer",
+          }}
           onClick={async () => {
             if (!user?.uid) {
               router.push(`/login?returnTo=${encodeURIComponent("/create")}`);
@@ -125,7 +141,6 @@ export function CreateWizard() {
               reason_D_blocks_C: (draft.reason_D_blocks_C ?? "").trim() || null,
               reason_Dprime_blocks_B: (draft.reason_Dprime_blocks_B ?? "").trim() || null,
 
-
               conflictType: draft.conflictType,
               tags: draft.tags,
 
@@ -142,10 +157,10 @@ export function CreateWizard() {
       </div>
 
       {/* メタ */}
-      <div style={{ border: "1px solid #ddd", borderRadius: 10, padding: 12, display: "grid", gap: 10 }}>
+      <div style={{ border: "1px solid #ddd", borderRadius: 10, padding: 12, display: "grid", gap: 10, background: "white" }}>
         <div style={{ display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
-          <div style={{ fontSize: 12, opacity: 0.7 }}>対立タイプ：</div>
-          <label>
+          <div style={labelStyle}>対立タイプ：</div>
+          <label style={{ color: "#111" }}>
             <input
               type="radio"
               name="ct"
@@ -154,7 +169,7 @@ export function CreateWizard() {
             />
             <span style={{ marginLeft: 6 }}>内部対立</span>
           </label>
-          <label>
+          <label style={{ color: "#111" }}>
             <input
               type="radio"
               name="ct"
@@ -166,19 +181,17 @@ export function CreateWizard() {
         </div>
 
         <div>
-          <div style={{ fontSize: 12, opacity: 0.7, marginBottom: 8 }}>テーマ（複数）</div>
+          <div style={{ ...labelStyle, marginBottom: 8 }}>テーマ（複数）</div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
             {TAGS.map((t) => {
               const checked = draft.tags.includes(t.key);
               return (
-                <label key={t.key} style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                <label key={t.key} style={{ display: "flex", gap: 6, alignItems: "center", color: "#111" }}>
                   <input
                     type="checkbox"
                     checked={checked}
                     onChange={() => {
-                      const next = checked
-                        ? draft.tags.filter((x) => x !== t.key)
-                        : [...draft.tags, t.key];
+                      const next = checked ? draft.tags.filter((x) => x !== t.key) : [...draft.tags, t.key];
                       setDraft({ ...draft, tags: next });
                     }}
                   />
@@ -200,45 +213,45 @@ export function CreateWizard() {
           ["D’（行動）", "Dprime"],
         ].map(([label, key]) => (
           <label key={key as string} style={{ display: "grid", gap: 6 }}>
-            <div style={{ fontSize: 12, opacity: 0.7 }}>{label}</div>
+            <div style={labelStyle}>{label}</div>
             <textarea
               rows={2}
-              style={{ width: "100%", padding: 10, border: "1px solid #ddd", borderRadius: 10 }}
+              style={inputStyle}
               value={(draft as any)[key]}
               onChange={(e) => setDraft({ ...draft, [key]: e.target.value } as any)}
             />
           </label>
         ))}
+
         <label style={{ display: "grid", gap: 6 }}>
-          <div style={{ fontSize: 12, opacity: 0.7 }}>背景説明（任意）</div>
+          <div style={labelStyle}>背景説明（任意）</div>
           <textarea
             rows={3}
-            style={{ width: "100%", padding: 10, border: "1px solid #ddd", borderRadius: 10 }}
+            style={inputStyle}
             value={draft.context ?? ""}
             onChange={(e) => setDraft({ ...draft, context: e.target.value })}
           />
         </label>
 
         <label style={{ display: "grid", gap: 6 }}>
-          <div style={{ fontSize: 12, opacity: 0.7 }}>DをするとCが難しい理由（任意）</div>
+          <div style={labelStyle}>DをするとCが難しい理由（任意）</div>
           <textarea
             rows={2}
-            style={{ width: "100%", padding: 10, border: "1px solid #ddd", borderRadius: 10 }}
+            style={inputStyle}
             value={draft.reason_D_blocks_C ?? ""}
             onChange={(e) => setDraft({ ...draft, reason_D_blocks_C: e.target.value })}
           />
         </label>
 
         <label style={{ display: "grid", gap: 6 }}>
-          <div style={{ fontSize: 12, opacity: 0.7 }}>D’をするとBが難しい理由（任意）</div>
+          <div style={labelStyle}>D’をするとBが難しい理由（任意）</div>
           <textarea
             rows={2}
-            style={{ width: "100%", padding: 10, border: "1px solid #ddd", borderRadius: 10 }}
+            style={inputStyle}
             value={draft.reason_Dprime_blocks_B ?? ""}
             onChange={(e) => setDraft({ ...draft, reason_Dprime_blocks_B: e.target.value })}
           />
         </label>
-
       </div>
 
       {/* 図 */}
@@ -261,7 +274,6 @@ export function CreateWizard() {
           Dprime: draft.Dprime,
         }}
       />
-
     </div>
   );
 }
