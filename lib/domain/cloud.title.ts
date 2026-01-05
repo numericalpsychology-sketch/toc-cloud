@@ -40,6 +40,45 @@ function stripCommonSuffix(a: string, b: string): { a: string; b: string } {
   return { a: trim(x), b: trim(y) };
 }
 
+// 共通接頭辞を見つけて、右側だけ共通部分を省略して差分を見せる
+function compressCommonPrefixForTitle(a: string, b: string): { left: string; right: string } | null {
+  const x = trim(a);
+  const y = trim(b);
+  if (!x || !y) return null;
+
+  // ✅ 追加：全体が短いなら、そのまま（圧縮しない）
+  // ※ 24 は buildTitleWithin24 の基準に合わせる
+  if (`${x}/${y}`.length <= 24) return null;
+
+  // 最長共通接頭辞
+  const n = Math.min(x.length, y.length);
+  let k = 0;
+  while (k < n && x[k] === y[k]) k++;
+
+  // 共通が短いならやらない（誤爆防止）
+  if (k < 6) return null;
+
+  // 日本語の区切りっぽいところまで戻す（助詞・句読点など）
+  const boundary = new Set(["を", "に", "へ", "と", "で", "が", "は", "、", "。", "（", "）", " ", "　"]);
+  let cut = k;
+  for (let i = k - 1; i >= 0; i--) {
+    if (boundary.has(x[i])) {
+      cut = i + 1;
+      break;
+    }
+  }
+
+  const prefix = trim(x.slice(0, cut));
+  const dx = trim(x.slice(cut));
+  const dy = trim(y.slice(cut));
+
+  // 差分が見えないならやめる
+  if (dx.length < 2 || dy.length < 2) return null;
+
+  // 左は全文のまま、右だけ差分にして短くする（ここがポイント）
+  return { left: x, right: dy };
+}
+
 // 少しだけ整形（やりすぎない）
 function normalizeLabel(s: string): string {
   let x = trim(s);
@@ -104,7 +143,12 @@ function diffLabels(D: string, Dp: string): { left: string; right: string } {
   const left = stripped.a || d1;
   const right = stripped.b || d2;
 
+  // ★追加：共通接頭辞が長い場合は、右側を差分表示にして「差…/差…」問題を防ぐ
+  const compressed = compressCommonPrefixForTitle(left, right);
+  if (compressed) return compressed;
+
   return { left, right };
+
 }
 
 export function generateCloudTitle(args: {
