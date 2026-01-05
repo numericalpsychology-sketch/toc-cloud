@@ -9,10 +9,21 @@ export function CloudDiagramSolutions(props: {
   C: string;
   selectedSolution: SolutionRow | null;
 }) {
+  const Label: React.CSSProperties = { fontSize: 12, color: "#444", fontWeight: 700, marginBottom: 6 };
+  const Body: React.CSSProperties = { whiteSpace: "pre-wrap", wordBreak: "break-word", fontWeight: 600, color: "#111" };
+
   const Box = (label: string, text: string) => (
-    <div style={{ border: "1px solid #ddd", borderRadius: 10, padding: 12, background: "white" }}>
-      <div style={{ fontSize: 12, opacity: 0.7, marginBottom: 6 }}>{label}</div>
-      <div style={{ whiteSpace: "pre-wrap", wordBreak: "break-word", fontWeight: 600 }}>{text || "（未入力）"}</div>
+    <div
+      style={{
+        border: "1px solid #ddd",
+        borderRadius: 10,
+        padding: 12,
+        background: "white",
+        color: "#111",
+      }}
+    >
+      <div style={Label}>{label}</div>
+      <div style={Body}>{text || "（未入力）"}</div>
     </div>
   );
 
@@ -24,28 +35,23 @@ export function CloudDiagramSolutions(props: {
         gridTemplateRows: "auto auto auto",
         gap: 10,
         alignItems: "stretch",
+        color: "#111",
       }}
     >
       {/* B（上段・中央列） */}
-      <div style={{ gridColumn: 2, gridRow: 1 }}>
-        {Box("B（要望）", props.B)}
-      </div>
+      <div style={{ gridColumn: 2, gridRow: 1 }}>{Box("B（要望）", props.B)}</div>
 
       {/* A（中段・左列）※中央寄せ */}
-      <div style={{ gridColumn: 1, gridRow: 2, alignSelf: "center" }}>
-        {Box("A（共通目標）", props.A)}
-      </div>
+      <div style={{ gridColumn: 1, gridRow: 2, alignSelf: "center" }}>{Box("A（共通目標）", props.A)}</div>
 
       {/* C（下段・中央列） */}
-      <div style={{ gridColumn: 2, gridRow: 3 }}>
-        {Box("C（要望）", props.C)}
-      </div>
+      <div style={{ gridColumn: 2, gridRow: 3 }}>{Box("C（要望）", props.C)}</div>
 
-      {/* インジェクション（中段・右列）※Aと同じ高さ＆中央寄せ */}
+      {/* インジェクション（右列） */}
       <div
         style={{
           gridColumn: 3,
-          gridRow: "1 / span 3",   // ★ B上端〜C下端に揃える
+          gridRow: "1 / span 3",
           border: "1px solid #ddd",
           borderRadius: 10,
           padding: 12,
@@ -53,16 +59,12 @@ export function CloudDiagramSolutions(props: {
           display: "grid",
           alignContent: "start",
           gap: 8,
+          color: "#111",
         }}
       >
-        <div style={{ fontSize: 12, opacity: 0.7, marginBottom: 6 }}>インジェクション</div>
+        <div style={Label}>インジェクション</div>
         <SolutionsList solution={props.selectedSolution} />
       </div>
-
-
-
     </div>
-
   );
-
 }
