@@ -100,9 +100,55 @@ export function CloudDetailClient({ cloudId }: { cloudId: string }) {
         >
           🔗 共有
         </button>
-        <BookmarkButton cloudId={cloudId} />
-        <CloudActions cloudId={cloudId} initialCount={data.stats?.helpfulCount ?? 0} />
+
+        {user ? (
+          <>
+            <BookmarkButton cloudId={cloudId} />
+            <CloudActions cloudId={cloudId} initialCount={data.stats?.helpfulCount ?? 0} />
+          </>
+        ) : (
+          <div
+            style={{
+              fontSize: 12,
+              color: "#444",
+              padding: "6px 10px",
+              border: "1px solid #eee",
+              borderRadius: 8,
+              background: "#fafafa",
+            }}
+          >
+            ブックマーク・評価・解決策の投稿は
+            <Link href="/login" style={{ marginLeft: 6, fontWeight: 700 }}>
+              ログイン
+            </Link>
+            が必要です
+          </div>
+        )}
       </div>
+
+      ...
+
+      {user ? (
+        <SolutionsPanel cloudId={cloudId} />
+      ) : (
+        <div
+          style={{
+            border: "1px solid #eee",
+            borderRadius: 10,
+            padding: 12,
+            fontSize: 12,
+            color: "#444",
+            background: "#fafafa",
+          }}
+        >
+          解決策（インジェクション）の投稿・閲覧の切り替えは
+          <Link href="/login" style={{ marginLeft: 6, fontWeight: 700 }}>
+            ログイン
+          </Link>
+          すると使えます
+        </div>
+      )}
+
 
       {data.context && (
         <div style={{ border: "1px solid #eee", borderRadius: 10, padding: 12 }}>
