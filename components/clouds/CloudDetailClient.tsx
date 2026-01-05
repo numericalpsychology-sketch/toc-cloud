@@ -226,4 +226,38 @@ export function CloudDetailClient({ cloudId }: { cloudId: string }) {
         <div style={{ border: "1px solid #eee", borderRadius: 10, padding: 12 }}>
           <div style={{ fontSize: 12, color: "#444", marginBottom: 6 }}>理由（任意）</div>
           {data.reason_D_blocks_C && (
-            <div style={{ margi
+            <div style={{ marginBottom: 6 }}>
+              <b>D→Cが難しい理由：</b> {data.reason_D_blocks_C}
+            </div>
+          )}
+          {data.reason_Dprime_blocks_B && (
+            <div>
+              <b>D’→Bが難しい理由：</b> {data.reason_Dprime_blocks_B}
+            </div>
+          )}
+        </div>
+      )}
+
+      {user ? (
+        <SolutionsPanel cloudId={cloudId} />
+      ) : (
+        <div
+          style={{
+            border: "1px solid #eee",
+            borderRadius: 10,
+            padding: 12,
+            fontSize: 12,
+            color: "#444",
+            background: "#fafafa",
+          }}
+        >
+          解決策（インジェクション）の投稿・切り替えは
+          <Link href="/login" style={{ marginLeft: 6, fontWeight: 700, color: "#111" }}>
+            ログイン
+          </Link>
+          すると使えます
+        </div>
+      )}
+    </div>
+  );
+}
