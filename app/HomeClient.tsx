@@ -131,37 +131,75 @@ export default function HomeClient() {
       >
         <div style={{ fontWeight: 700 }}>TOCクラウド</div>
 
-        {user ? (
-          <Link
-            href="/create"
-            style={{
-              padding: "8px 12px",
-              borderRadius: 10,
-              border: "1px solid #ddd",
-              background: "#f7f7ff",
-              fontWeight: 600,
-              textDecoration: "none",
-              color: "#111",
-            }}
-          >
-            ＋ 新規作成
-          </Link>
-        ) : (
-          <Link
-            href="/login"
-            style={{
-              padding: "8px 12px",
-              borderRadius: 10,
-              border: "1px solid #ddd",
-              background: "white",
-              fontWeight: 600,
-              textDecoration: "none",
-              color: "#111",
-            }}
-          >
-            ログインして投稿
-          </Link>
-        )}
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          {user ? (
+            <>
+              <Link
+                href="/create"
+                style={{
+                  padding: "8px 12px",
+                  borderRadius: 10,
+                  border: "1px solid #ddd",
+                  background: "#f7f7ff",
+                  fontWeight: 600,
+                  textDecoration: "none",
+                  color: "#111",
+                }}
+              >
+                ＋ 新規作成
+              </Link>
+
+              <Link
+                href="/settings"
+                style={{
+                  padding: "8px 12px",
+                  borderRadius: 10,
+                  border: "1px solid #ddd",
+                  background: "white",
+                  fontWeight: 600,
+                  textDecoration: "none",
+                  color: "#111",
+                }}
+              >
+                設定
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                style={{
+                  padding: "8px 12px",
+                  borderRadius: 10,
+                  border: "1px solid #ddd",
+                  background: "white",
+                  fontWeight: 600,
+                  textDecoration: "none",
+                  color: "#111",
+                }}
+              >
+                ログインして投稿
+              </Link>
+
+              {/* 未ログインでも設定は一応出してOK（開いたらログインへ飛ぶ実装） */}
+              <Link
+                href="/settings"
+                style={{
+                  padding: "8px 12px",
+                  borderRadius: 10,
+                  border: "1px solid #ddd",
+                  background: "white",
+                  fontWeight: 600,
+                  textDecoration: "none",
+                  color: "#111",
+                }}
+              >
+                設定
+              </Link>
+            </>
+          )}
+        </div>
+
       </div>
 
       <div
