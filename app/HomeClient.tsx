@@ -13,10 +13,9 @@ type Tag =
   | "society"
   | "family"
   | "parenting"
-  | "health"
-  | "money"
-  | "sports"
-  | "other";
+  | "private"
+  | "kids"
+  | "materials";
 
 const TAGS: { key: Tag; label: string }[] = [
   { key: "work", label: "仕事" },
@@ -24,11 +23,11 @@ const TAGS: { key: Tag; label: string }[] = [
   { key: "society", label: "社会" },
   { key: "family", label: "家族" },
   { key: "parenting", label: "子育て" },
-  { key: "health", label: "健康" },
-  { key: "money", label: "お金" },
-  { key: "sports", label: "スポーツ" },
-  { key: "other", label: "その他" },
+  { key: "private", label: "プライベート" },
+  { key: "kids", label: "子ども" },
+  { key: "materials", label: "教材" },
 ];
+
 
 type CloudRow = {
   id: string;
