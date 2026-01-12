@@ -12,6 +12,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { SolutionsRepo, type SolutionRow } from "@/lib/repositories/solutions.repo";
 import { useAuth } from "@/hooks/useAuth";
 import { usePathname } from "next/navigation";
+import { buildCloudReadAloudText } from "@/lib/readAloud/cloud.readAloud";
+import { buildReadAloudVM } from "@/lib/domain/cloud.readAloud";
+
 
 type CloudDoc = any;
 
@@ -65,6 +68,11 @@ export function CloudDetailClient({ cloudId }: { cloudId: string }) {
     [solutions, selectedSolutionId]
   );
 
+  const readAloudMode = useMemo<"adult" | "kids">(() => {
+    const tags = (data?.tags ?? []) as string[];
+    return tags.includes("kids") ? "kids" : "adult";
+  }, [data]);
+
   const synthRef = useRef<SpeechSynthesis | null>(null);
   const utterRef = useRef<SpeechSynthesisUtterance | null>(null);
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -85,20 +93,23 @@ export function CloudDetailClient({ cloudId }: { cloudId: string }) {
     };
   }, []);
 
-  const cloudReadText = useMemo(() => {
-    // 「クラウド全文」＝ A/B/C/D/D' + 背景（あれば）を読み上げ
-    const title = data?.title ? `タイトル。${data.title}。` : "";
-    const context = data?.context ? `背景。${data.context}。` : "";
+  const readAloudText = useMemo(() => {
+    if (!data) return "";
+    const vm = buildReadAloudVM(
+      {
+        A: data.A?.text ?? "",
+        B_raw: data.B?.raw ?? "",
+        C_raw: data.C?.raw ?? "",
+        D: data.D?.text ?? "",
+        Dprime: data.Dprime?.text ?? "",
+      },
+      readAloudMode
+    );
 
-    const A = `A。${data?.A?.text ?? ""}。`;
-    const B = `B。${data?.B?.raw ?? ""}。`;
-    const C = `C。${data?.C?.raw ?? ""}。`;
-    const D = `D。${data?.D?.text ?? ""}。`;
-    const Dp = `Dダッシュ。${data?.Dprime?.text ?? ""}。`;
+    // speakText を順に連結して「作成画面と同じ語尾＋間」で読ませる
+    return vm.lines.map((l) => l.speakText).join(" ");
+  }, [data, readAloudMode]);
 
-    // 余計な空白を減らす
-    return [title, context, A, B, C, D, Dp].join(" ").replace(/\s+/g, " ").trim();
-  }, [data]);
 
   const stopReadAloud = () => {
     try {
@@ -110,12 +121,13 @@ export function CloudDetailClient({ cloudId }: { cloudId: string }) {
 
   const startReadAloud = async () => {
     if (!speechSupported) return;
-    if (!cloudReadText) return;
+    if (!readAloudText) return;
+
 
     // 二重再生防止
     stopReadAloud();
 
-    const u = new SpeechSynthesisUtterance(cloudReadText);
+    const u = new SpeechSynthesisUtterance(readAloudText);
     utterRef.current = u;
 
     // 日本語指定（利用可能なら）
