@@ -12,7 +12,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { SolutionsRepo, type SolutionRow } from "@/lib/repositories/solutions.repo";
 import { useAuth } from "@/hooks/useAuth";
 import { usePathname } from "next/navigation";
-import { buildCloudReadAloudText } from "@/lib/readAloud/cloud.readAloud";
 import { buildReadAloudVM } from "@/lib/domain/cloud.readAloud";
 
 
@@ -105,10 +104,9 @@ export function CloudDetailClient({ cloudId }: { cloudId: string }) {
       },
       readAloudMode
     );
-
-    // speakText を順に連結して「作成画面と同じ語尾＋間」で読ませる
     return vm.lines.map((l) => l.speakText).join(" ");
   }, [data, readAloudMode]);
+
 
 
   const stopReadAloud = () => {
@@ -127,6 +125,7 @@ export function CloudDetailClient({ cloudId }: { cloudId: string }) {
     // 二重再生防止
     stopReadAloud();
 
+    if (!readAloudText) return;
     const u = new SpeechSynthesisUtterance(readAloudText);
     utterRef.current = u;
 

@@ -210,56 +210,52 @@ export function buildReadAloudVM(
   const lines: ReadAloudLine[] =
     mode === "kids"
       ? [
-        {
-          key: "0",
-          text: `いま、${A} という ねがい がある。`,
-          speakText: `いま、${A}、という、ねがい、がある。`,
-          highlightTokens: ["A"],
-        },
+        // key1: AB（AのためにBをしたい）
         {
           key: "1",
-          text: `それを かなえるために、${wantKids(Bn)}。`,
-          speakText: `それを、かなえるために、${wantKids(Bn)}。`,
+          text: `${joinTameNiha(A)}${wantKids(Bn)}。`,
+          speakText: `${joinTameNiha(A)}${wantKids(Bn)}。`,
           highlightTokens: ["A", "B"],
         },
+
+        // key2: BD（BをするならDがよさそう）
         {
           key: "2",
           text: `そして、${ifKids(Bn)}、${goodKids(Dn)}。`,
           speakText: `そして、${ifKids(Bn)}、${goodKids(Dn)}。`,
-
           highlightTokens: ["B", "D"],
         },
+
+        // key3: AC（AのためにはCも大事）
         {
           key: "3",
-          text: `もうひとつ、${A} のためには、${Cn} も だいじ。`,
-          speakText: `もうひとつ、${A}、のためには、${Cn}、も、だいじ。`,
+          text: `もうひとつ、${joinTameNiha(A)}${Cn} も だいじ。`,
+          speakText: `もうひとつ、${joinTameNiha(A)}${Cn}、も、だいじ。`,
           highlightTokens: ["A", "C"],
         },
+
+        // key4: CD'（CならD'がよさそう）
         {
           key: "4",
-          text: `そして、${ifKids(Cn)}、${goodKids(Dpn)}。`,
-          speakText: `そして、${ifKids(Cn)}、${goodKids(Dpn)}。`,
+          text: `だから、${ifKids(Cn)}、${goodKids(Dpn)}。`,
+          speakText: `だから、${ifKids(Cn)}、${goodKids(Dpn)}。`,
           highlightTokens: ["C", "Dprime"],
         },
+
+        // key5: DC（DだとCがうまくいかない）
         {
           key: "5",
-          text: `こまるのは、${whenKids(Dn)}、${Cn} が うまく いかなくなる ところ。`,
-          speakText: `こまるのは、${whenKids(Dn)}、${Cn}、が、うまく、いかなくなる、ところ。`,
-
+          text: `${whenKids(Dn)}、${Cn} が うまく いかなくなる。`,
+          speakText: `${whenKids(Dn)}、${Cn}、が、うまく、いかなくなる。`,
           highlightTokens: ["D", "C"],
         },
+
+        // key6: D'B（D'だとBがうまくいかない）
         {
           key: "6",
-          text: `もうひとつは、${whenKids(Dpn)}、${Bn} が うまく いかなくなる ところ。`,
-          speakText: `もうひとつは、${whenKids(Dpn)}、${Bn}、が、うまく、いかなくなる、ところ。`,
-
+          text: `${whenKids(Dpn)}、${Bn} が うまく いかなくなる。`,
+          speakText: `${whenKids(Dpn)}、${Bn}、が、うまく、いかなくなる。`,
           highlightTokens: ["Dprime", "B"],
-        },
-        {
-          key: "7",
-          text: `じゃあ、どうしたら りょうほう うまく いくかな？`,
-          speakText: `じゃあ、どうしたら、りょうほう、うまく、いくかな？`,
-          highlightTokens: [],
         },
       ]
       : [
