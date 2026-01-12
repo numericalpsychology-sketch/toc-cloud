@@ -9,7 +9,10 @@ import {
   serverTimestamp,
   setDoc,
   where,
+  updateDoc,
+  increment,
 } from "firebase/firestore";
+
 import { addDoc } from "firebase/firestore";
 
 
@@ -22,6 +25,7 @@ export type SolutionRow = {
   updatedAt?: any;
 };
 
+
 export class SolutionsRepo {
   private col() {
     return collection(db, "solutions");
@@ -29,6 +33,10 @@ export class SolutionsRepo {
 
   private docRef(cloudId: string, uid: string) {
     return doc(db, "solutions", `${cloudId}_${uid}`);
+  }
+
+  private cloudRef(cloudId: string) {
+    return doc(db, "clouds", cloudId);
   }
 
   async create(cloudId: string, uid: string, text: string) {
@@ -39,7 +47,13 @@ export class SolutionsRepo {
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
+
+    await updateDoc(this.cloudRef(cloudId), {
+      "stats.solutionsCount": increment(1),
+      updatedAt: serverTimestamp(),
+    });
   }
+
 
   async upsert(cloudId: string, uid: string, text: string) {
     const ref = this.docRef(cloudId, uid);

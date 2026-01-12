@@ -11,6 +11,7 @@ import { CloudDiagramSolutions } from "@/components/clouds/CloudDiagramSolutions
 import { useEffect, useMemo, useState } from "react";
 import { SolutionsRepo, type SolutionRow } from "@/lib/repositories/solutions.repo";
 import { useAuth } from "@/hooks/useAuth";
+import { usePathname } from "next/navigation";
 
 type CloudDoc = any;
 
@@ -18,6 +19,8 @@ export function CloudDetailClient({ cloudId }: { cloudId: string }) {
   const [data, setData] = useState<CloudDoc | null>(null);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
+  const pathname = usePathname();
+  const loginHref = `/login?next=${encodeURIComponent(pathname)}`;
 
   useEffect(() => {
     const ref = doc(db, "clouds", cloudId);
@@ -81,9 +84,11 @@ export function CloudDetailClient({ cloudId }: { cloudId: string }) {
       {!user && (
         <div style={{ fontSize: 12, color: "#444" }}>
           ※ ブックマーク・解決策の投稿・評価には
-          <Link href="/login" style={{ marginLeft: 4, fontWeight: 700, color: "#111" }}>
+          <Link href={`/login?returnTo=${encodeURIComponent(`/clouds/${cloudId}`)}`} style={{ marginLeft: 6, fontWeight: 700, color: "#111" }}>
             ログイン
           </Link>
+
+
           が必要です
         </div>
       )}
@@ -131,9 +136,11 @@ export function CloudDetailClient({ cloudId }: { cloudId: string }) {
             }}
           >
             ブックマーク・評価・解決策の投稿は
-            <Link href="/login" style={{ marginLeft: 6, fontWeight: 700, color: "#111" }}>
+            <Link href={`/login?returnTo=${encodeURIComponent(`/clouds/${cloudId}`)}`} style={{ marginLeft: 6, fontWeight: 700, color: "#111" }}>
               ログイン
             </Link>
+
+
             が必要です
           </div>
         )}
@@ -252,9 +259,11 @@ export function CloudDetailClient({ cloudId }: { cloudId: string }) {
           }}
         >
           解決策（インジェクション）の投稿・切り替えは
-          <Link href="/login" style={{ marginLeft: 6, fontWeight: 700, color: "#111" }}>
+          <Link href={`/login?returnTo=${encodeURIComponent(`/clouds/${cloudId}`)}`} style={{ marginLeft: 6, fontWeight: 700, color: "#111" }}>
             ログイン
           </Link>
+
+
           すると使えます
         </div>
       )}

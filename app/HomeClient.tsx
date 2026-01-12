@@ -36,7 +36,12 @@ type CloudRow = {
 
   conflictType?: ConflictType;
   tags?: Tag[];
+
+  stats?: {
+    solutionsCount?: number;
+  };
 };
+
 
 function pillStyle(active: boolean): React.CSSProperties {
   return {
@@ -297,30 +302,47 @@ export default function HomeClient() {
               <div style={{ color: "#444" }}>条件に一致するクラウドがありません。</div>
             ) : (
               <div style={{ display: "grid", gap: 10 }}>
-                {filtered.map((c) => (
-                  <Link
-                    key={c.id}
-                    href={`/clouds/${c.id}`}
-                    style={{
-                      display: "block",
-                      border: "1px solid #e5e5e5",
-                      borderRadius: 12,
-                      padding: 12,
-                      textDecoration: "none",
-                      background: "white",
-                      color: "inherit",
-                    }}
-                  >
-                    <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
-                      <div style={{ fontWeight: 800 }}>{c.title ?? "（無題のクラウド）"}</div>
-                      <div style={{ fontSize: 12, color: "#444" }}>
-                        {c.updatedAt?.toDate ? c.updatedAt.toDate().toLocaleString() : ""}
-                      </div>
-                    </div>
 
-                    <div style={{ marginTop: 10, fontSize: 13, color: "#111" }}>開く →</div>
-                  </Link>
-                ))}
+
+                {filtered.map((c) => {
+                  const solutionsCount = c.stats?.solutionsCount ?? 0;
+
+                  return (
+                    <Link
+                      key={c.id}
+                      href={`/clouds/${c.id}`}
+                      style={{
+                        display: "block",
+                        border: "1px solid #e5e5e5",
+                        borderRadius: 12,
+                        padding: 12,
+                        textDecoration: "none",
+                        background: "white",
+                        color: "inherit",
+                      }}
+                    >
+                      <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
+                        <div style={{ fontWeight: 800 }}>{c.title ?? "（無題のクラウド）"}</div>
+                        <div style={{ fontSize: 12, color: "#444" }}>
+                          {c.updatedAt?.toDate ? c.updatedAt.toDate().toLocaleString() : ""}
+                        </div>
+                      </div>
+
+                      {solutionsCount === 0 ? (
+                        <div style={{ marginTop: 8, fontSize: 12, fontWeight: 800, color: "crimson" }}>
+                          解決策募集中！
+                        </div>
+                      ) : (
+                        <div style={{ marginTop: 8, fontSize: 12, color: "#444" }}>
+                          解決策：{solutionsCount}件
+                        </div>
+                      )}
+
+                      <div style={{ marginTop: 10, fontSize: 13, color: "#111" }}>開く →</div>
+                    </Link>
+                  );
+                })}
+
               </div>
             )}
           </>

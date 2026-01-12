@@ -9,7 +9,8 @@ export default function LoginClient() {
   const sp = useSearchParams();
 
   const raw = sp.get("returnTo");
-  const returnTo = raw && raw.startsWith("/") ? raw : "/create";
+  const returnTo = raw && raw.startsWith("/") ? raw : "/";
+
 
   const { user, loading, loginWithGoogle, logout } = useAuth();
 
