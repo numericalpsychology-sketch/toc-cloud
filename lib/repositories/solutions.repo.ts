@@ -58,6 +58,7 @@ export class SolutionsRepo {
   async upsert(cloudId: string, uid: string, text: string) {
     const ref = this.docRef(cloudId, uid);
     const snap = await getDoc(ref);
+    const isNew = !snap.exists();
 
     await setDoc(
       ref,
@@ -70,7 +71,15 @@ export class SolutionsRepo {
       },
       { merge: true }
     );
+
+    if (isNew) {
+      await updateDoc(this.cloudRef(cloudId), {
+        "stats.solutionsCount": increment(1),
+        updatedAt: serverTimestamp(),
+      });
+    }
   }
+
 
   async listByCloud(cloudId: string): Promise<SolutionRow[]> {
     // uid順でなく新しい順にしたいので updatedAt を使う

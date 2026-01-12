@@ -8,7 +8,7 @@ import { BookmarkButton } from "../../components/clouds/BookmarkButton";
 import { SolutionsPanel } from "@/components/clouds/SolutionsPanel";
 import { CloudDiagramLR } from "@/components/clouds/CloudDiagramLR";
 import { CloudDiagramSolutions } from "@/components/clouds/CloudDiagramSolutions";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { SolutionsRepo, type SolutionRow } from "@/lib/repositories/solutions.repo";
 import { useAuth } from "@/hooks/useAuth";
 import { usePathname } from "next/navigation";
@@ -64,6 +64,75 @@ export function CloudDetailClient({ cloudId }: { cloudId: string }) {
     () => solutions.find((x) => x.id === selectedSolutionId) ?? null,
     [solutions, selectedSolutionId]
   );
+
+  const synthRef = useRef<SpeechSynthesis | null>(null);
+  const utterRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [speechSupported, setSpeechSupported] = useState(false);
+
+  useEffect(() => {
+    // ブラウザ対応チェック
+    const ok = typeof window !== "undefined" && "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+    setSpeechSupported(ok);
+    if (ok) synthRef.current = window.speechSynthesis;
+
+    // ページ離脱時は止める
+    return () => {
+      try {
+        window.speechSynthesis?.cancel();
+      } catch { }
+      setIsSpeaking(false);
+    };
+  }, []);
+
+  const cloudReadText = useMemo(() => {
+    // 「クラウド全文」＝ A/B/C/D/D' + 背景（あれば）を読み上げ
+    const title = data?.title ? `タイトル。${data.title}。` : "";
+    const context = data?.context ? `背景。${data.context}。` : "";
+
+    const A = `A。${data?.A?.text ?? ""}。`;
+    const B = `B。${data?.B?.raw ?? ""}。`;
+    const C = `C。${data?.C?.raw ?? ""}。`;
+    const D = `D。${data?.D?.text ?? ""}。`;
+    const Dp = `Dダッシュ。${data?.Dprime?.text ?? ""}。`;
+
+    // 余計な空白を減らす
+    return [title, context, A, B, C, D, Dp].join(" ").replace(/\s+/g, " ").trim();
+  }, [data]);
+
+  const stopReadAloud = () => {
+    try {
+      synthRef.current?.cancel();
+    } catch { }
+    setIsSpeaking(false);
+    utterRef.current = null;
+  };
+
+  const startReadAloud = async () => {
+    if (!speechSupported) return;
+    if (!cloudReadText) return;
+
+    // 二重再生防止
+    stopReadAloud();
+
+    const u = new SpeechSynthesisUtterance(cloudReadText);
+    utterRef.current = u;
+
+    // 日本語指定（利用可能なら）
+    u.lang = "ja-JP";
+
+    // 話速・音量（好みで調整可）
+    u.rate = 1.0;
+    u.pitch = 1.0;
+    u.volume = 1.0;
+
+    u.onend = () => setIsSpeaking(false);
+    u.onerror = () => setIsSpeaking(false);
+
+    setIsSpeaking(true);
+    synthRef.current?.speak(u);
+  };
+
 
   if (loading) return <div style={{ padding: 24, color: "#111" }}>読み込み中…</div>;
   if (!data) return <div style={{ padding: 24, color: "#111" }}>見つかりませんでした。</div>;
@@ -154,7 +223,30 @@ export function CloudDetailClient({ cloudId }: { cloudId: string }) {
         </div>
       )}
 
-      <div style={{ fontWeight: 800 }}>① クラウド（A/B/C/D/D’）</div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10 }}>
+        <div style={{ fontWeight: 800 }}>① クラウド（A/B/C/D/D’）</div>
+
+        {speechSupported && (
+          <button
+            onClick={isSpeaking ? stopReadAloud : startReadAloud}
+            style={{
+              padding: "6px 10px",
+              border: "1px solid #ccc",
+              borderRadius: 999,
+              background: "white",
+              color: "#111",
+              fontWeight: 700,
+              fontSize: 12,
+              cursor: "pointer",
+              whiteSpace: "nowrap",
+            }}
+            title="クラウド全文を読み上げます"
+          >
+            {isSpeaking ? "⏹ 停止" : "🔊 読み上げ"}
+          </button>
+        )}
+      </div>
+
       <CloudDiagramLR
         key={"lr-" + cloudId}
         A={data.A?.text ?? ""}
